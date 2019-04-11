@@ -1,29 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-void main() {
-
-  runApp(MaterialApp(
-    title: "Final UEFS",
-    home: Home(),
-    theme: ThemeData(
-      hintColor: Colors.indigo[900],
-      primaryColor: Colors.indigo[900]
-    ),
-  ));
-
-}
-
-class Home extends StatefulWidget {
+class ToNaFinal extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _ToNaFinalState createState() => _ToNaFinalState();
 }
 
-class _HomeState extends State<Home> {
+class _ToNaFinalState extends State<ToNaFinal> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _info = "Informe suas notas...";
+  String _zoas = "";
   double _NFm = 0;
   TextEditingController nota1 = TextEditingController();
   TextEditingController nota2 = TextEditingController();
@@ -45,12 +33,15 @@ class _HomeState extends State<Home> {
       double _notaDois = double.parse(nota2.text);
       double _notaTres = double.parse(nota3.text);
       double _media = (_notaUm + _notaDois + _notaTres) / 3;
+
       if( _media >= 7 ){
-        if( _media == 7 ){
-          _info = "Por pouco em cara acho melhor você dar uma manerada na Netflix e no Instagram, Sua média foi ${_media.toStringAsPrecision(3)}";
+        if( _media >= 7 && _media < 8 ){
+          _info = "Por pouco... acho melhor você dar uma manerada na Netflix e no Instagram\nSua média foi ${_media.toStringAsPrecision(3)}";
+          _zoas = "Quase na Final :)";
         }
         else{
-          _info = "Parabéns você passou!!, Sua média foi ${_media.toStringAsPrecision(3)}";
+          _info = "Parabéns você passou!!!\nSua média foi ${_media.toStringAsPrecision(3)}";
+          _zoas = "Fugi da Final :)";
         }
       }
       else if( _media >= 3 && _media < 7 ){
@@ -58,11 +49,12 @@ class _HomeState extends State<Home> {
         if(_NFm < 3){
           _NFm = 3.0;
         }
-        _info = "Que comecem os jogos, você está nas Finais, Sua média foi ${_media.toStringAsPrecision(3)} e você vai precisar de no mínimo ${_NFm.toStringAsPrecision(3)} para passar na Prova Final.";
-
+        _info = "Que comecem os jogos, você está na Final...\nSua média foi ${_media.toStringAsPrecision(3)} e você vai precisar de no mínimo ${_NFm.toStringAsPrecision(3)} para passar na Prova Final.";
+        _zoas = "Estou na Final :/";
       }
       else if( _media < 3  && _media >= 0){
-        _info = "Você não alcançou a média minima para as finais, Tente novamente no próximo semestre, Sua média foi ${_media.toStringAsPrecision(3)}";
+        _info = "Você não alcançou a nota minima para as finais, Tente novamente no próximo semestre...\nSua média foi ${_media.toStringAsPrecision(3)}";
+        _zoas = "Nem na Final :(";
       }
     });
   }
@@ -82,7 +74,7 @@ class _HomeState extends State<Home> {
         ),*/
         Scaffold(
           appBar: AppBar(
-            title: Text("Final UEFS", style: TextStyle(color: Colors.cyan[50]),),
+            title: Text("To na Final?"),
             backgroundColor: Colors.indigo[900],
             centerTitle: true,
             actions: <Widget>[
@@ -92,7 +84,6 @@ class _HomeState extends State<Home> {
               )
             ],
           ),
-          backgroundColor: Colors.cyan[50],
           body: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
             child: Form(
@@ -130,14 +121,39 @@ class _HomeState extends State<Home> {
                           vibrate();
                           if( _formKey.currentState.validate()){
                             _calcular();
+                            showDialog<String> (
+                              context: context,
+                              builder: (context){
+                                return AlertDialog(
+                                  title: Text("$_zoas"),
+                                  content: Text("$_info", style: TextStyle(fontStyle: FontStyle.normal, fontSize: 20.0),),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                        onPressed: (){
+                                          Navigator.pop(context, 'OK');
+                                        },
+                                        child: Text('OK')
+                                    )
+                                  ],
+                                );
+                            }
+                            ).then<String>((returnVal){
+                              if(returnVal != null){
+                                Scaffold.of(context).showSnackBar(
+                                  SnackBar(
+                                    action: SnackBarAction(label: 'OK', onPressed: (){}),
+                                    content: Text('Voce clicou no $returnVal')),
+                                );
+                              }
+                            });
                           }
                         },
                         color: Colors.indigo[900],
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(Icons.arrow_forward_ios, color: Colors.cyan[50], size: 25.0,),
-                            Text("Calcular", style: TextStyle(color: Colors.cyan[50], fontSize: 25.0),
+                            Icon(Icons.arrow_forward_ios,color: Colors.white, size: 25.0,),
+                            Text("Calcular", style: TextStyle(color: Colors.white,fontSize: 25.0),
                             )
                           ],
                         ),
@@ -145,14 +161,14 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   //Mensagem para o Usuario
-                  Padding(
+                  /*Padding(
                     padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 20.0),
                     child: Text(
                       "$_info",
                       style: TextStyle(color: Colors.black, fontSize: 25.0, fontStyle: FontStyle.italic),
                       textAlign: TextAlign.center,
                     ),
-                  )
+                  )*/
                 ],
               ),
             ),
